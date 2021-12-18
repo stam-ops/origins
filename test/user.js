@@ -73,11 +73,11 @@ describe('User Model Tests', () => {
         password:"12345"
       };
       chai.request(server)
-      .post('/users/logout')
+      .delete('/users/logout')
       .send(user)
       .set({ "Authorization": `Bearer ${savedtoken}` })
       .end((err, res) => {
-        res.should.have.status(200);
+        res.should.have.status(204);
         done();
       });
     });
