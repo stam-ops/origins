@@ -46,7 +46,7 @@ describe('User Model Tests', () => {
 
   });
 
-  describe('/Logout user', () => {
+  describe('/Logout user after register', () => {
     it('it should logout the user (remove authtoken)', (done) => {
       let user = {
         email:"david@stam.app",
@@ -64,7 +64,6 @@ describe('User Model Tests', () => {
 
   });
 
-});
 
   describe('/Login user', () => {
     it('it should lpogin the user (create authtoken)', (done) => {
@@ -86,7 +85,7 @@ describe('User Model Tests', () => {
 
   });
 
-  describe('/Logout user', () => {
+  describe('/Logout user after login', () => {
     it('it should logout the user (remove authtoken)', (done) => {
       let user = {
         email:"david@stam.app",
