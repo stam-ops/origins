@@ -4,7 +4,7 @@ const db = require("./index.js");
 
 module.exports = (db,sequelize, Sequelize) => {
 
-  const User = sequelize.define('User', {
+  const User = sequelize.define('user', {
     email: {
       type: Sequelize.STRING,
       unique: true,
@@ -34,10 +34,9 @@ module.exports = (db,sequelize, Sequelize) => {
 
   User.prototype.authorize = async function () {
     const user = this
-    console.log(" authorize  user id="+this.id);
     const token = await AuthToken.generate(this.id);
 
-    await user.addAuthToken(token);
+    await user.addAuthtoken(token);
 
     return { user, token }
   };

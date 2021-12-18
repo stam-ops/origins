@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
 
-  const AuthToken = sequelize.define('AuthToken', {
+  const AuthToken = sequelize.define('authtoken', {
     token: Sequelize.STRING
   }, {});
 

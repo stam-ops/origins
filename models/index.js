@@ -19,7 +19,7 @@ db.videotag = require("./videotag.model.js")(sequelize, Sequelize);
 db.authtoken=require("./auth.token.model.js")(sequelize, Sequelize);
 db.user=require("./user.model.js")(db,sequelize, Sequelize);
 
-db.user.hasMany(db.authtoken, { as: "AuthTokens" });
+db.user.hasMany(db.authtoken, { as: "authtokens" });
 
 
 module.exports = db;

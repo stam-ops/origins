@@ -19,6 +19,8 @@ const bcrypt = require('bcrypt');
     return res.json(data);
 
   } catch(err) {
+    if (err.name=="SequelizeUniqueConstraintError")
+    return res.status(400).send("email already exists - try login");
     return res.status(400).send(err);
   }
 
