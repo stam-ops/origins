@@ -46,6 +46,26 @@ describe('User Model Tests', () => {
 
   });
 
+  describe('/Logout user', () => {
+    it('it should logout the user (remove authtoken)', (done) => {
+      let user = {
+        email:"david@stam.app",
+        password:"12345"
+      };
+      chai.request(server)
+      .delete('/users/logout')
+      .send(user)
+      .set({ "Authorization": `Bearer ${savedtoken}` })
+      .end((err, res) => {
+        res.should.have.status(204);
+        done();
+      });
+    });
+
+  });
+
+});
+
   describe('/Login user', () => {
     it('it should lpogin the user (create authtoken)', (done) => {
       let user = {
