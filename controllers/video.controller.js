@@ -26,7 +26,6 @@ exports.create = (req, res) => {
     description: req.body.description
   };
 
-  // Save
   Video.create(video)
   .then(data => {
     res.send(data);

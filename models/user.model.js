@@ -31,6 +31,26 @@ module.exports = (db,sequelize, Sequelize) => {
     throw new Error('invalid password');
   }
 
+  User.checkauth = async function(token) {
+
+   const user = await User.findOne({
+    include: [{
+        model: AuthToken,
+        as: "authtokens",
+        where: {
+            token: token
+        }
+    }]
+    })
+
+    if (user){
+        return user;
+    }
+
+    throw new Error('invalid token');
+
+  }
+
 
   User.prototype.authorize = async function () {
     const user = this

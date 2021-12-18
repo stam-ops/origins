@@ -2,6 +2,8 @@
 const db = require("../models");
 const Video = db.video;
 const VideoTag = db.videotag;
+const Favorite = db.favorite;
+
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 let server = require('../app');
@@ -19,12 +21,24 @@ describe('Video', () => {
 
   // clean video table and video <-> tag associations
   before(function() {
+
+    Favorite.destroy({
+      where: {},
+      truncate: false
+    })
+
+
     VideoTag.destroy({
       where: {},
       truncate: false
     })
 
     Video.destroy({
+      where: {},
+      truncate: false
+    })
+
+    Favorite.destroy({
       where: {},
       truncate: false
     })
@@ -458,4 +472,18 @@ describe('Video', () => {
     });
   });
 
+
+  describe('/Delete tag that is still linked to a video', () => {
+    it('it should not delete tag', (done) => {
+      chai.request(server)
+      .delete('/tags/'+idtag)
+      .end((err, res) => {
+        res.should.have.status(404);
+        res.body.should.have.property('message').eql('Tag id = '+idtag+' is associated with one or more videos. Please remove video tag before.');
+        done();
+      });
+
+    });
+
+  });
 });

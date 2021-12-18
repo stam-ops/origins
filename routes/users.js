@@ -9,4 +9,9 @@ router.post("/login", user.login);
 
 router.delete("/logout", user.logout);
 
+router.post("/addfavorite", user.addfavorite);
+
+router.get("/getfavorite", user.getfavorite);
+
+
 module.exports = router;

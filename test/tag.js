@@ -1,6 +1,7 @@
 
 const db = require("../models");
 const Tag = db.tag;
+const VideoTag = db.videotag;
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 let server = require('../app');
@@ -15,6 +16,11 @@ describe('Tag', () => {
   // clean tag table
   before(function() {
     Tag.destroy({
+      where: {},
+      truncate: false
+    })
+
+    VideoTag.destroy({
       where: {},
       truncate: false
     })
