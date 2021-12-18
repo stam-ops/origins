@@ -73,7 +73,7 @@ describe('User Model Tests', () => {
         password:"12345"
       };
       chai.request(server)
-      .post('/users/login')
+      .post('/users/logout')
       .send(user)
       .set({ "Authorization": `Bearer ${savedtoken}` })
       .end((err, res) => {
