@@ -2,8 +2,11 @@ const db = require("../models");
 const Video = db.video;
 const Videotag = db.videotag;
 const Op = db.Sequelize.Op;
+const elastic = require("./elastic.js");
 
-exports.create = (req, res) => {
+
+
+exports.create = async (req, res) => {
   // Validation
   if (!req.body.name) {
     res.status(400).send({
@@ -19,6 +22,17 @@ exports.create = (req, res) => {
     return;
   }
 
+
+  const videoCheck = await Video.findAll({ where: {name: req.body.name  } });
+
+  if (videoCheck.length>0){
+    res.status(400).send({
+      message: "Video with that name already exists"
+    });
+    return;
+  }
+
+
   // Creation
   const video = {
     name: req.body.name,
@@ -28,6 +42,11 @@ exports.create = (req, res) => {
 
   Video.create(video)
   .then(data => {
+
+    // send info to elastic cloud
+
+    elastic.run(req.body.name,req.body.description).catch(console.log)
+
     res.send(data);
   })
   .catch(err => {
@@ -95,8 +114,21 @@ exports.findOne = (req, res) => {
   });
 };
 
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const id = req.params.id;
+
+  const checkVideo = await Video.findAll({ where: { id: id } });
+
+  if (checkVideo.length==0){
+    res.status(400).send({
+      message: "Video ID not exists"
+    });
+    return;
+  }
+  const elasticId=await elastic.read(checkVideo[0].name).catch(console.log)
+
+  elastic.updateVideo(elasticId,req.body.name,req.body.description).catch(console.log)
+
 
   Video.update(req.body, {
     where: { id: id }

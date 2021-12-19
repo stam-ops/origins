@@ -7,7 +7,6 @@ const Op = db.Sequelize.Op;
 
 const bcrypt = require('bcrypt');
 
-
 exports.register  = async  (req, res) =>  {
 
   const hash = bcrypt.hashSync(req.body.password, 10);

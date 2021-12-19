@@ -159,6 +159,25 @@ describe('Video', () => {
 
   });
 
+  describe('/CREATE Video KO 3 - same name', () => {
+    it('it should not create video if name already exists', (done) => {
+      let video1 = {
+        name:"video3",
+        description: "super but de paris",
+        url:"https:\\origins.com\id222",
+      };
+      chai.request(server)
+      .post('/videos')
+      .send(video1)
+      .end((err, res) => {
+        res.should.have.status(400);
+        res.body.should.have.property('message').eql('Video with that name already exists');
+        done();
+      });
+    });
+
+  });
+
   describe('/Get one video by name video1', () => {
     it('it should get the video infos', (done) => {
 
@@ -369,6 +388,26 @@ describe('Video', () => {
       .end((err, res) => {
         res.should.have.status(400);
         res.body.should.have.property('message').eql('Tag ID not exists');
+
+        done();
+      });
+    });
+
+  });
+
+  describe('/Add tag to a video KO - video already tagged with that tag', () => {
+
+    it('it should not tag the video', (done) => {
+      let videotag = {
+        "videoid":idvideo2,
+        "tagid":idtag
+      }
+      chai.request(server)
+      .post('/videotag')
+      .send(videotag)
+      .end((err, res) => {
+        res.should.have.status(400);
+        res.body.should.have.property('message').eql('Video already tagged with that tag');
 
         done();
       });
