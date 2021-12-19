@@ -17,4 +17,7 @@ router.delete("/", videos.deleteAll);
 
 router.get("/bytag/:id", videos.findByTag);
 
+// Eleastic search
+router.get("/keyword/:keyword", videos.findByKeyWord);
+
 module.exports = router;

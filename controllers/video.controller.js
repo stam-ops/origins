@@ -114,6 +114,17 @@ exports.findOne = (req, res) => {
   });
 };
 
+exports.findByKeyWord = async (req, res) => {
+
+  const keyword = req.params.keyword;
+
+  const result=await elastic.searchkeyword(keyword).catch(console.log)
+
+res.send(result);
+
+}
+
+
 exports.update = async (req, res) => {
   const id = req.params.id;
 
@@ -125,6 +136,21 @@ exports.update = async (req, res) => {
     });
     return;
   }
+
+  // check if video name is avalaible
+
+if (req.body.name){
+  const checkVideoName = await Video.findAll({ where: { name : req.body.name } });
+
+  if (checkVideoName.length>0){
+    res.status(400).send({
+      message: "Video name already in use"
+    });
+    return;
+  }
+
+}
+
   const elasticId=await elastic.read(checkVideo[0].name).catch(console.log)
 
   elastic.updateVideo(elasticId,req.body.name,req.body.description).catch(console.log)
@@ -151,31 +177,78 @@ exports.update = async (req, res) => {
   });
 };
 
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
   const id = req.params.id;
 
-  Video.destroy({
-    where: { id: id }
-  })
-  .then(num => {
-    if (num == 1) {
-      res.send({
-        message: "Video was deleted successfully!"
-      });
-    } else {
-      res.send({
-        message: `Cannot delete Video with id=${id}.`
-      });
-    }
-  })
-  .catch(err => {
-    res.status(500).send({
-      message: "Could not delete video with id=" + id
+  const checkVideo = await Video.findAll({ where: { id: id } });
+
+  if (checkVideo.length==0){
+    res.status(400).send({
+      message: "Video ID not exists"
     });
-  });
+    return;
+  }
+
+  const checkVideoTag = await  Videotag.findAll({ where: {videoid: id  } });
+
+  if (checkVideoTag.length!=0){
+    // remove all video tags
+    for (let i = 0; i < checkVideoTag.length; i++) {
+      Videotag.destroy({
+        where: { id: checkVideoTag[i].id }
+      })
+
+    }
+  }
+
+
+  const videodestroy = await Video.destroy({ where: { id: id } });
+
+  if (videodestroy == 1){
+    // delete elactic
+    const elasticId=await elastic.read(checkVideo[0].name).catch(console.log)
+    elastic.removeVideo(elasticId).catch(console.log)
+
+    res.send({
+      message: "Video was deleted successfully!"
+    });
+  }else {
+    res.send({
+      message: `Cannot delete Video with id=${id}.`
+    });
+  }
+
+
+
+
 };
 
-exports.deleteAll = (req, res) => {
+exports.deleteAll = async (req, res) => {
+
+
+  Videotag.destroy({
+    where: {},
+    truncate: false
+  })
+
+  const checkVideo = await Video.findAll();
+
+  if (checkVideo.length==0){
+    res.status(400).send({
+      message: "No video"
+    });
+    return;
+  }
+
+  // clean elactic elasticsearch
+
+  for (let i = 0; i < checkVideo.length; i++) {
+    console.log("video name to delete"+checkVideo[i].name);
+    const elasticId=await elastic.read(checkVideo[i].name).catch(console.log)
+    console.log("elasticId to delete"+elasticId);
+    elastic.removeVideo(elasticId).catch(console.log)
+  }
+
   Video.destroy({
     where: {},
     truncate: false

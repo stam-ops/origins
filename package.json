@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "mocha"
+    "test": "mocha --timeout 3000"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.16.0",

@@ -264,6 +264,28 @@ describe('Video', () => {
 
   });
 
+
+  describe('/Update video with video name not available', () => {
+    it('it should not update the video', (done) => {
+
+      let newinfo = {
+        name: "video3"
+      };
+
+      chai.request(server)
+      .put('/videos/'+idvideo1)
+      .send(newinfo)
+      .end((err, res) => {
+        res.should.have.status(400);
+        res.body.should.have.property('message').eql('Video name already in use');
+
+        done();
+      });
+
+    });
+
+  });
+
   describe('/Get one video by id', () => {
     it('it should get the video', (done) => {
 
@@ -301,8 +323,8 @@ describe('Video', () => {
       chai.request(server)
       .delete('/videos/'+200)
       .end((err, res) => {
-        res.should.have.status(200);
-        res.body.should.have.property('message').eql('Cannot delete Video with id=200.');
+        res.should.have.status(400);
+        res.body.should.have.property('message').eql('Video ID not exists');
         done();
       });
 
@@ -437,8 +459,8 @@ describe('Video', () => {
       chai.request(server)
       .delete('/videotag/'+200)
       .end((err, res) => {
-        res.should.have.status(200);
-        res.body.should.have.property('message').eql("Cannot delete association tag video id=200.");
+        res.should.have.status(400);
+        res.body.should.have.property('message').eql("Cannot delete association tag video id=200");
         done();
       });
 

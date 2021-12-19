@@ -25,6 +25,7 @@ exports.run = async  (name,description) =>  {
   })
 
   await clientElastic.indices.refresh({index: 'video'})
+
 }
 
 exports.updateVideo = async  (id,name,description) =>  {
@@ -32,19 +33,30 @@ exports.updateVideo = async  (id,name,description) =>  {
     index: 'video',
     id: id,
     body: {
-      name: name,
-      description: description
+      "script": "ctx._source.name = '"+name+"';ctx._source.description = '"+description+"'"
+
     }
   })
 
   await clientElastic.indices.refresh({index: 'video'})
 
-  const { body } = await clientElastic.get({
+  /*const { body } = await clientElastic.get({
     index: 'video',
     id: id
   })
 
-  console.log(body)
+  console.log(body)*/
+}
+
+exports.removeVideo = async (id) =>  {
+
+  await clientElastic.delete({
+    index: 'video',
+    id: id
+  })
+
+  await clientElastic.indices.refresh({index: 'video'})
+
 }
 
 
@@ -57,8 +69,30 @@ exports.read = async  (name) =>  {
       }
     }
   })
-  console.log(body.hits.hits)
+  // console.log("hits="+JSON.stringify(body.hits.hits))
   return body.hits.hits[0]._id;
+
+}
+
+
+exports.searchkeyword = async  (keyword) =>  {
+  const { body } = await clientElastic.search({
+    index: 'video',
+    body: {
+      query: {
+        wildcard: {
+          name: "*"+keyword+"*",
+        },
+        wildcard: {
+          description: "*"+keyword+"*"
+         },
+         wildcard: {
+           tags: "*"+keyword+"*"
+          }
+      }
+    }
+  })
+  return body.hits.hits;
 
 }
 
@@ -74,12 +108,12 @@ exports.addTag = async  (id,tag) =>  {
     }
   })
 
-  const { body } = await clientElastic.get({
+  /*const { body } = await clientElastic.get({
     index: 'video',
     id: id
   })
 
-  console.log(body)
+  console.log(body)*/
 }
 
 exports.removetag = async  (id,tag) =>  {
